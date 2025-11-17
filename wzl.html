@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11-17</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .danmu-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .danmu-item {
+            position: absolute;
+            color: #666;
+            padding: 0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1), 0 4px 15px rgba(0, 0, 0, 0.05);
+            opacity: 0;
+            transform: scale(0.3);
+            white-space: normal;
+            max-width: 220px;
+            min-width: 180px;
+            overflow: hidden;
+            z-index: 1001;
+            animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        /* 粉色主题 */
+        .danmu-item.theme-pink {
+            background: linear-gradient(135deg, #fef1f3 0%, #fce4ec 100%);
+            border: 1px solid rgba(252, 228, 236, 0.8);
+        }
+        
+        .danmu-item.theme-pink .danmu-header {
+            background: rgba(255, 182, 193, 0.15);
+            border-bottom: 1px solid rgba(255, 182, 193, 0.2);
+            color: #e91e63;
+        }
+
+        /* 蓝色主题 */
+        .danmu-item.theme-blue {
+            background: linear-gradient(135deg, #f0f6ff 0%, #e6f2ff 100%);
+            border: 1px solid rgba(176, 216, 255, 0.8);
+        }
+        
+        .danmu-item.theme-blue .danmu-header {
+            background: rgba(135, 206, 235, 0.15);
+            border-bottom: 1px solid rgba(135, 206, 235, 0.2);
+            color: #1976d2;
+        }
+
+        /* 绿色主题 */
+        .danmu-item.theme-green {
+            background: linear-gradient(135deg, #f1f8e9 0%, #e8f5e8 100%);
+            border: 1px solid rgba(200, 230, 201, 0.8);
+        }
+        
+        .danmu-item.theme-green .danmu-header {
+            background: rgba(144, 238, 144, 0.15);
+            border-bottom: 1px solid rgba(144, 238, 144, 0.2);
+            color: #388e3c;
+        }
+
+        /* 紫色主题 */
+        .danmu-item.theme-purple {
+            background: linear-gradient(135deg, #f8f5ff 0%, #f3e5f5 100%);
+            border: 1px solid rgba(225, 190, 231, 0.8);
+        }
+        
+        .danmu-item.theme-purple .danmu-header {
+            background: rgba(186, 104, 200, 0.15);
+            border-bottom: 1px solid rgba(186, 104, 200, 0.2);
+            color: #7b1fa2;
+        }
+
+        /* 橙色主题 */
+        .danmu-item.theme-orange {
+            background: linear-gradient(135deg, #fff8f0 0%, #ffecdf 100%);
+            border: 1px solid rgba(255, 204, 128, 0.8);
+        }
+        
+        .danmu-item.theme-orange .danmu-header {
+            background: rgba(255, 183, 77, 0.15);
+            border-bottom: 1px solid rgba(255, 183, 77, 0.2);
+            color: #ff8f00;
+        }
+
+        /* 青色主题 */
+        .danmu-item.theme-cyan {
+            background: linear-gradient(135deg, #e8f8f8 0%, #e0f2f1 100%);
+            border: 1px solid rgba(178, 223, 219, 0.8);
+        }
+        
+        .danmu-item.theme-cyan .danmu-header {
+            background: rgba(77, 208, 225, 0.15);
+            border-bottom: 1px solid rgba(77, 208, 225, 0.2);
+            color: #00acc1;
+        }
+
+        .danmu-header {
+            padding: 8px 12px;
+            border-radius: 12px 12px 0 0;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .danmu-content {
+            padding: 10px 12px;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .danmu-icon {
+            font-size: 14px;
+            animation: heartbeat 2s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            25% {
+                transform: scale(1.2) rotate(90deg);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(0.8) rotate(180deg);
+                opacity: 1;
+            }
+            75% {
+                transform: scale(1.1) rotate(270deg);
+                opacity: 0.9;
+            }
+        }
+
+        .title {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+            z-index: 2000;
+            animation: titlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% {
+                transform: translateX(-50%) scale(1);
+                opacity: 0.9;
+            }
+            50% {
+                transform: translateX(-50%) scale(1.05);
+                opacity: 1;
+            }
+        }
+
+        .stats {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-radius: 15px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 2000;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .progress-ring {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            z-index: 500;
+        }
+
+        .progress-ring circle {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.3);
+            stroke-width: 4;
+        }
+
+        .progress-ring .progress {
+            stroke: #ffffff;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 0.5s ease;
+            transform-origin: 50% 50%;
+            transform: rotate(-90deg);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .danmu-item {
+                max-width: 180px;
+                min-width: 160px;
+            }
+            
+            .danmu-header {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+            
+            .danmu-content {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+
+            .title {
+                font-size: 22px;
+            }
+
+            .stats {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 16px;
+                font-size: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .danmu-item {
+                max-width: 160px;
+                min-width: 140px;
+            }
+            
+            .danmu-header {
+                padding: 5px 8px;
+                font-size: 10px;
+                gap: 4px;
+            }
+            
+            .danmu-content {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
+            
+            .danmu-icon {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="title">💝给宝宝💝</div>
+    
+    <div class="danmu-container" id="danmuContainer"></div>
+    
+    <div class="stats" id="stats">
+        生成中: 0 / 100
+    </div>
+
+    <svg class="progress-ring" id="progressRing">
+        <circle cx="50" cy="50" r="45" class="progress" id="progressCircle"></circle>
+    </svg>
+
+    <script>
+        // 给女朋友的甜蜜话语
+        const warmTips = [
+            "宝宝记得多喝水哦", "早点睡觉，梦里见你", "天冷了多穿点", "想你了", "你今天也很美",
+            "记得按时吃饭", "出门要小心哦", "别累着自己", "你是我的小公主", "爱你爱你爱你",
+            "今天有好好想我吗", "你的笑容最好看", "每天都想抱抱你", "做我的小宝贝好不好", "永远爱你",
+            "别熬夜了乖", "记得想我哦", "你是最棒的女孩", "今天也要开心", "我的小可爱",
+            "保护好自己", "你在我心里最重要", "想和你一起看电影", "你的声音最好听", "想牵你的手",
+            "一起去看星星吧", "你是我的小天使", "想给你做饭吃", "陪你到世界尽头", "你就是我的全世界",
+            "想和你一起慢慢变老", "你笑起来像糖果", "想每天叫你起床", "我们一起努力变更好", "你的拥抱最温暖",
+            "想和你去旅行", "你是我见过最可爱的人", "每个瞬间都想和你分享", "你的小脾气我都喜欢", "想陪你看日出日落",
+            "我的小心肝", "想给你摘星星", "你的小手好温暖", "想保护你一辈子", "你是我的小确幸",
+            "想和你过每一个节日", "你的眼睛会说话", "想给你买好多好吃的", "做你的专属骑士", "你开心我就开心",
+            "想和你一起变成小孩", "你是我最甜的梦", "想给你全世界的温柔", "你的小任性我都宠着", "想和你十指相扣",
+            "我的小宝贝要健康快乐", "想每天对你说早安晚安", "你是我的小幸运", "想和你一起看遍世界美景", "你在身边就是晴天",
+            "想当你的专属小厨师", "你的每个表情都让我心动", "想给你写一万封情书", "做你永远的小太阳", "你是我这辈子最美的相遇",
+            "想和你白头偕老", "你的小秘密我都想知道", "想给你最好的一切", "我的心里只有你", "想和你过平凡而幸福的每一天"
+        ];
+
+        let danmuCount = 0;
+        let totalTargetCount = 100; // 目标生成100条
+        let intervalId = null;
+        let currentZIndex = 10000;
+
+        const danmuContainer = document.getElementById('danmuContainer');
+        const statsElement = document.getElementById('stats');
+        const progressCircle = document.getElementById('progressCircle');
+
+        // 生成随机位置 
+        function getRandomPosition() {
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            
+            // 温馨提示弹幕宽度固定为220px
+            const danmuWidth = 220;
+            const danmuHeight = 70; // 温馨提示高度更高
+            const margin = 15;
+            
+            // OPPO Reno12 Pro 和小屏幕设备优化
+            const isSmallScreen = screenWidth < 450;
+            if (isSmallScreen) {
+                // 小屏幕设备使用更小的弹幕和边距
+                const optimizedDanmuWidth = 180;
+                const optimizedMargin = 10;
+                
+                const maxX = screenWidth - optimizedDanmuWidth - optimizedMargin;
+                const maxY = screenHeight - danmuHeight - optimizedMargin;
+                
+                const x = Math.random() * Math.max(maxX, optimizedMargin) + optimizedMargin;
+                const y = Math.random() * Math.max(maxY, optimizedMargin) + optimizedMargin;
+                
+                if (danmuCount < 3) {
+                    console.log(`小屏幕优化: 屏幕${screenWidth}px, 弹幕宽度${optimizedDanmuWidth}px, 位置(${x.toFixed(0)}, ${y.toFixed(0)})`);
+                }
+                return { x, y };
+            }
+            
+            // 通用计算
+            const maxX = screenWidth - danmuWidth - margin;
+            const maxY = screenHeight - danmuHeight - margin;
+            
+            // 确保最小可用空间
+            const safeMaxX = Math.max(maxX, screenWidth * 0.2);
+            const safeMaxY = Math.max(maxY, screenHeight * 0.2);
+            
+            const x = Math.random() * safeMaxX + margin;
+            const y = Math.random() * safeMaxY + margin;
+            
+            // 前3条弹幕显示调试信息
+            if (danmuCount < 3) {
+                console.log(`屏幕: ${screenWidth}x${screenHeight}, 弹幕宽度: ${danmuWidth.toFixed(0)}px, 位置: (${x.toFixed(0)}, ${y.toFixed(0)})`);
+            }
+            
+            return { x, y };
+        }
+
+        // 颜色主题数组（包含主题类名和对应图标）
+        const colorThemes = [
+            { theme: 'theme-pink', icon: '💗' },
+            { theme: 'theme-blue', icon: '💙' },
+            { theme: 'theme-green', icon: '💚' },
+            { theme: 'theme-purple', icon: '💜' },
+            { theme: 'theme-orange', icon: '🧡' },
+            { theme: 'theme-cyan', icon: '💎' }
+        ];
+
+        // 创建单个弹幕
+        function createSingleDanmu() {
+            if (danmuCount >= totalTargetCount) {
+                stopGeneration();
+                return;
+            }
+
+            const danmu = document.createElement('div');
+            const tipText = warmTips[Math.floor(Math.random() * warmTips.length)];
+            const position = getRandomPosition();
+            
+            // 随机选择颜色主题
+            const selectedTheme = colorThemes[Math.floor(Math.random() * colorThemes.length)];
+            
+            danmu.className = `danmu-item ${selectedTheme.theme}`;
+            danmu.style.zIndex = currentZIndex++;
+            danmu.style.left = position.x + 'px';
+            danmu.style.top = position.y + 'px';
+            danmu.style.whiteSpace = 'normal'; // 允许换行
+            
+            // 创建温馨提示结构，使用对应的图标
+            danmu.innerHTML = `
+                <div class="danmu-header">
+                    <span class="danmu-icon">${selectedTheme.icon}</span>
+                    <span>甜蜜话语</span>
+                </div>
+                <div class="danmu-content">${tipText}</div>
+            `;
+
+            // 添加到容器中
+            danmuContainer.appendChild(danmu);
+            
+            danmuCount++;
+            updateStats();
+            updateProgress();
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            statsElement.textContent = `生成中: ${danmuCount} / ${totalTargetCount}`;
+            if (danmuCount >= totalTargetCount) {
+                statsElement.textContent = `完成: ${danmuCount} / ${totalTargetCount}`;
+            }
+        }
+
+        // 更新进度环
+        function updateProgress() {
+            const progress = danmuCount / totalTargetCount;
+            const circumference = 2 * Math.PI * 45;
+            const offset = circumference - (progress * circumference);
+            progressCircle.style.strokeDashoffset = offset;
+        }
+
+        // 开始生成弹幕 - 每秒10条
+        function startGeneration() {
+            console.log('开始生成甜蜜话语...');
+            
+            // 每100ms生成一条弹幕，实现每秒10条的效果
+            intervalId = setInterval(() => {
+                createSingleDanmu();
+            }, 100);
+        }
+
+        // 停止生成
+        function stopGeneration() {
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+                console.log('甜蜜话语生成完成！💕');
+                cleanupAfterComplete();
+            }
+        }
+
+        // 页面加载完成后自动开始
+        window.addEventListener('load', () => {
+            // 初始化进度环
+            const circumference = 2 * Math.PI * 45;
+            progressCircle.style.strokeDasharray = circumference;
+            progressCircle.style.strokeDashoffset = circumference;
+            
+            console.log('💝 给女朋友的甜蜜话语系统已加载');
+            console.log('将自动生成100条甜蜜话语，每秒10条...');
+            
+            // 延迟1秒开始生成
+            setTimeout(() => {
+                startGeneration();
+            }, 1000);
+        });
+
+        // 性能优化：只在完成后进行清理，让所有弹幕都累积显示
+        function cleanupAfterComplete() {
+            setTimeout(() => {
+                console.log('所有甜蜜话语已生成完成，满满的爱意💕');
+                // 可以选择是否清理，现在保留所有弹幕
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
